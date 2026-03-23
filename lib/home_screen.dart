@@ -6,6 +6,7 @@ import 'package:islamic_app/tabs/hadeeth_tab/hadeeth_tab_page.dart';
 import 'package:islamic_app/tabs/quran_tab/quran_tab_page.dart';
 import 'package:islamic_app/tabs/radio_tab/radio_tab_page.dart';
 import 'package:islamic_app/tabs/sebha_tab/sebha_tab_page.dart';
+import 'package:islamic_app/tabs/splash_screen.dart';
 import 'package:islamic_app/tabs/times_tab/times_tab_page.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,11 +19,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int currantIndex = 0;
   List<Widget> tabs = [
+    //SplashScreen(),
     QuranTabPage(),
     HadeethTabPage(),
     SebhaTabPage(),
     RadioTabPage(),
-    TimesTabPage()
+    TimesTabPage(),
+
   ];
 
   Widget build(BuildContext context) {

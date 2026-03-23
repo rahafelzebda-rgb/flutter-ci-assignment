@@ -9,6 +9,7 @@ import 'package:islamic_app/gen/assets.gen.dart';
 import 'package:islamic_app/tabs/quran_tab/widgets/custom_text_field.dart';
 import 'package:islamic_app/tabs/quran_tab/widgets/most_recent_section.dart';
 import 'package:islamic_app/tabs/quran_tab/widgets/suras_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QuranTabPage extends StatefulWidget {
   const QuranTabPage({super.key});
@@ -20,6 +21,7 @@ class QuranTabPage extends StatefulWidget {
 class _QuranTabPageState extends State<QuranTabPage> {
   final TextEditingController controller = TextEditingController();
   List<SuraModel> _filteredSura = QuranData.suras;
+  List<SuraModel>_mostRecentSuras=[];
 
   void _onSearchChanged(String searchText) {
     setState(() {
@@ -37,6 +39,12 @@ class _QuranTabPageState extends State<QuranTabPage> {
         ).toList();
       }
     });
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getMosRecentSuras();
   }
 
   @override
@@ -66,9 +74,10 @@ class _QuranTabPageState extends State<QuranTabPage> {
                     ),
                   ),
                 )),
-                SliverToBoxAdapter(child: MostRecentSection()),
+                SliverToBoxAdapter(child: MostRecentSection(mostRecent:_mostRecentSuras)),
                 SurasList(
                   suras: _filteredSura,
+                  onTap: _updateMostRecent ,
                 ),
               ],
             ),
@@ -77,6 +86,33 @@ class _QuranTabPageState extends State<QuranTabPage> {
       ],
     );
   }
+  Future< List<void>>_getMosRecentSuras()async{
+    SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+    List<String> mostRecent=sharedPreferences.getStringList("mostRecent")??[];
+    List<SuraModel>mostRecentSuras=[];
+    for(var i=0;i<mostRecent.length;i++){
+      int suraNumber=int.parse(mostRecent[i]);
+      SuraModel suraModel = QuranData.suras.firstWhere((sura)=>sura.number==suraNumber);
+      mostRecentSuras.add(suraModel);
+    }
+_mostRecentSuras= mostRecentSuras;
+    setState(() {
+
+    });
+    return mostRecentSuras;
+  }
+   Future<void>   _updateMostRecent(SuraModel sura)async{
+    SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+      List<String> mostRecent=
+          sharedPreferences.getStringList("mostRecent")??[];
+      mostRecent.insert(0,sura.number.toString());
+    Set<String>  mostRecentSet=mostRecent.toSet();
+    mostRecent=mostRecentSet.toList();
+      await sharedPreferences.setStringList("mostRecent", mostRecent);
+      print("DONE->$mostRecent");
+    await  _getMosRecentSuras();
+  }
+
+
 }
 
-//22
